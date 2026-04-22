@@ -1,9 +1,182 @@
-# Stencil CLI
+# Stencil CLI (with Widget Builder)
 
 [![npm (scoped)](https://img.shields.io/npm/v/@bigcommerce/stencil-cli.svg)](https://www.npmjs.com/package/@bigcommerce/stencil-cli)
 ![tests](https://github.com/bigcommerce/stencil-cli/workflows/Tests/badge.svg?branch=master)
 
-The BigCommerce server emulator for local theme development.
+The BigCommerce server emulator for local theme development — extended with local widget preview and a CLI publishing command.
+
+Unlike the standalone [Widget Builder](https://developer.bigcommerce.com/docs/storefront/widgets/widget-builder), this fork renders a live, non-published preview of your local widget templates directly inside the Stencil theme you're developing. That means you can see exactly how a widget will look in context — placed in the right region, styled by your theme's CSS — without having to publish it to your store first. When you're ready, the `stencil-wb publish-widget` command pushes the widget template to your store in a single step.
+
+---
+
+## `stencil-wb` — Widget Builder CLI
+
+### Installing
+
+Install the fork globally from GitHub:
+
+```bash
+npm install -g oBundle/stencil-cli#widget-builder
+```
+
+This gives you both the standard `stencil` commands and the new `stencil-wb` command.
+
+### Configuration
+
+#### 1. Set the widgets directory in `config.stencil.json`
+
+Add a `widgetBuilder` block to your theme's `config.stencil.json` to tell `stencil-wb` where your widget template folders live:
+
+```json
+{
+  "widgetBuilder": {
+    "widgetsDir": "./templates/components/custom/widgets"
+  }
+}
+```
+
+The `widgetsDir` path is relative to your theme root (wherever `config.stencil.json` is).
+
+You can optionally specify a `channelId` if your store uses multiple storefronts (defaults to `1`):
+
+```json
+{
+  "widgetBuilder": {
+    "widgetsDir": "./templates/components/custom/widgets",
+    "channelId": 1
+  }
+}
+```
+
+#### 2. Create a widget template folder
+
+Each widget template is its own folder inside the `widgetsDir` directory. The folder name is used as the widget template name (unless overridden in `schema.json`).
+
+A widget template folder should contain:
+
+| File             | Required | Description                                                           |
+| ---------------- | -------- | --------------------------------------------------------------------- |
+| `schema.json`    | Yes      | Widget Builder schema defining the settings UI (tabs, sections, fields). Can also contain `name` and `template` properties. |
+| `widget.html`    | Yes*     | Handlebars template for the widget markup. *Can be omitted if `template` is provided inline in `schema.json`. |
+| `config.json`    | Yes      | Configuration values for the widget. Used to populate the local preview. (Future improvement: fall back to `default` values from `schema.json` when this file is absent.) |
+| `placement.json` | Yes      | Placement rules (page type and region) so Stencil knows where to render the widget locally. |
+
+#### Example folder structure
+
+```
+widgets/
+└── my-banner/
+    ├── schema.json
+    ├── widget.html
+    ├── config.json
+    └── placement.json
+```
+
+#### Example `schema.json`
+
+```json
+{
+  "name": "My Banner",
+  "schema": [
+    {
+      "type": "tab",
+      "label": "Content",
+      "sections": [
+        {
+          "label": "Text",
+          "settings": [
+            {
+              "type": "input",
+              "id": "heading",
+              "label": "Heading",
+              "default": "Hello World"
+            },
+            {
+              "type": "input",
+              "id": "subtitle",
+              "label": "Subtitle",
+              "default": "Welcome to my store"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+The top-level object can also include a `template` property with inline HTML, which is used instead of `widget.html` if that file is absent. A raw array (just the `schema` portion) is also accepted.
+
+#### Example `widget.html`
+
+```handlebars
+<section class="my-banner">
+  <h2>{{heading}}</h2>
+  <p>{{subtitle}}</p>
+</section>
+```
+
+#### Example `config.json`
+
+```json
+{
+  "heading": "Hello World",
+  "subtitle": "Welcome to my store"
+}
+```
+
+#### Example `placement.json`
+
+```json
+{
+  "placements": [
+    {
+      "page_type": "home",
+      "region": "page_builder_content_1"
+    }
+  ]
+}
+```
+
+> **Future improvements for local preview placement:**
+> - A centralized, single `placement.json` file (rather than one per widget) so multiple widget previews can be rendered on the same page in a specific order.
+> - A new `{{widget-builder}}` Handlebars helper to place widget previews directly in your templates wherever the helper is used.
+
+### Publishing a Widget Template
+
+From your theme directory (where `config.stencil.json` lives), run:
+
+```bash
+stencil-wb publish-widget <widget-template-folder>
+```
+
+The `<widget-template-folder>` argument is just the **folder name** — not a full or relative path. It is resolved relative to the `widgetsDir` configured in `config.stencil.json`.
+
+For example, given this structure:
+
+```
+widgets/
+└── my-banner/
+    ├── schema.json
+    └── widget.html
+```
+
+You would run:
+
+```bash
+stencil-wb publish-widget my-banner
+```
+
+#### What happens when you publish
+
+- **First publish:** The widget template is **created** on your store via the BigCommerce API. A `widget.yml` file is written inside the widget folder containing the template's UUID. This is the same tracking file that Widget Builder uses.
+- **Subsequent publishes:** The command detects the existing `widget.yml` and **updates** the widget template in place instead of creating a duplicate.
+
+The `widget.yml` file should be committed to version control so that all team members update the same widget template rather than creating new ones.
+
+> **Note:** Your API token must have the **content manage** scope. If you haven't already, run `stencil-wb init` to configure your store credentials.
+
+---
 
 ## Install
 
