@@ -1,5 +1,5 @@
 {
-  "name": "@bigcommerce/stencil-cli",
+  "name": "@bigcommerce/stencil-cli-wb",
   "version": "9.0.0",
   "type": "module",
   "description": "CLI tool to run BigCommerce Stores locally for theme development.",
@@ -16,17 +16,17 @@
     "release": "semantic-release"
   },
   "bin": {
-    "stencil": "./bin/stencil.js",
-    "stencil-bundle": "./bin/stencil-bundle.js",
-    "stencil-download": "./bin/stencil-download.js",
-    "stencil-init": "./bin/stencil-init.js",
-    "stencil-push": "./bin/stencil-push.js",
-    "stencil-pull": "./bin/stencil-pull.js",
-    "stencil-start": "./bin/stencil-start.js",
-    "stencil-release": "./bin/stencil-release.js",
-    "stencil-debug": "./bin/stencil-debug.js",
-    "stencil-scss-autofix": "./bin/stencil-scss-autofix.js",
-    "stencil-attributes-analyzer": "./bin/stencil-attributes-analyzer.js"
+    "stencil-wb": "./bin/stencil.js",
+    "stencil-wb-bundle": "./bin/stencil-bundle.js",
+    "stencil-wb-download": "./bin/stencil-download.js",
+    "stencil-wb-init": "./bin/stencil-init.js",
+    "stencil-wb-push": "./bin/stencil-push.js",
+    "stencil-wb-pull": "./bin/stencil-pull.js",
+    "stencil-wb-start": "./bin/stencil-start.js",
+    "stencil-wb-release": "./bin/stencil-release.js",
+    "stencil-wb-debug": "./bin/stencil-debug.js",
+    "stencil-wb-scss-autofix": "./bin/stencil-scss-autofix.js",
+    "stencil-wb-attributes-analyzer": "./bin/stencil-attributes-analyzer.js"
   },
   "config": {
     "stencil_version": "1.0"
