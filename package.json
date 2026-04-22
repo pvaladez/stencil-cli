@@ -26,7 +26,8 @@
     "stencil-wb-release": "./bin/stencil-release.js",
     "stencil-wb-debug": "./bin/stencil-debug.js",
     "stencil-wb-scss-autofix": "./bin/stencil-scss-autofix.js",
-    "stencil-wb-attributes-analyzer": "./bin/stencil-attributes-analyzer.js"
+    "stencil-wb-attributes-analyzer": "./bin/stencil-attributes-analyzer.js",
+    "stencil-wb-publish-widget": "./bin/stencil-publish-widget.js"
   },
   "config": {
     "stencil_version": "1.0"
