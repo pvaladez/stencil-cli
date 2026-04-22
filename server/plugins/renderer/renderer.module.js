@@ -235,9 +235,9 @@ internals.parseResponse = async (bcAppData, request, response, responseArgs) => 
         });
     }
 
-    if (internals.options.widgetsDir && pageType) {
+    if (internals.options.widgetsDir) {
         try {
-            console.log(`[Widget Builder] Rendering widgets for pageType=${pageType}, entityId=${entityId}`);
+            console.log(`[Widget Builder] Rendering widgets for pageType=${pageType || '(none)'}, entityId=${entityId}`);
             const widgetEntries = await localWidgetRenderer.getRenderedWidgetsForPage({
                 widgetsDir: internals.options.widgetsDir,
                 pageType,
