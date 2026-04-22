@@ -59,17 +59,16 @@ A widget template folder should contain:
 | `schema.json`    | Yes      | Widget Builder schema defining the settings UI (tabs, sections, fields). Can also contain `name` and `template` properties. |
 | `widget.html`    | Yes*     | Handlebars template for the widget markup. *Can be omitted if `template` is provided inline in `schema.json`. |
 | `config.json`    | Yes      | Configuration values for the widget. Used to populate the local preview. (Future improvement: fall back to `default` values from `schema.json` when this file is absent.) |
-| `placement.json` | Yes      | Placement rules (page type and region) so Stencil knows where to render the widget locally. |
 
 #### Example folder structure
 
 ```
 widgets/
+├── placements.mjs
 └── my-banner/
     ├── schema.json
     ├── widget.html
-    ├── config.json
-    └── placement.json
+    └── config.json
 ```
 
 #### Example `schema.json`
@@ -125,21 +124,36 @@ The top-level object can also include a `template` property with inline HTML, wh
 }
 ```
 
-#### Example `placement.json`
+#### 3. Create `placements.mjs`
 
-```json
-{
-  "placements": [
+A single `placements.mjs` file lives directly inside the `widgetsDir` directory. It controls which widgets appear on which pages/regions and in what order. The `.mjs` extension ensures Node.js treats it as an ES module regardless of your theme's `package.json` settings.
+
+The file must export a `placements` array. Each object in the array specifies a page type, a region, and a `widgets` list of widget folder names. The order of folder names in the `widgets` array determines the rendering order of the widget previews.
+
+```js
+export const placements = [
     {
-      "page_type": "home",
-      "region": "page_builder_content_1"
-    }
-  ]
-}
+        page_type: 'home',
+        region: 'page_builder_content_1',
+        widgets: ['hero-carousel', 'my-banner'],
+    },
+    {
+        page_type: 'product',
+        region: 'product_below_content--global',
+        widgets: ['related-items'],
+    },
+];
 ```
 
-> **Future improvements for local preview placement:**
-> - A centralized, single `placement.json` file (rather than one per widget) so multiple widget previews can be rendered on the same page in a specific order.
+| Property    | Required | Description                                                                                  |
+| ----------- | -------- | -------------------------------------------------------------------------------------------- |
+| `page_type` | Yes      | The page type to match (e.g. `home`, `product`, `category`, `brand`, `page`).                |
+| `region`    | Yes      | The theme region to render the widgets into. Append `--global` for global regions.           |
+| `widgets`   | Yes      | Ordered array of widget folder names. Widgets render in the listed order.                    |
+| `position`  | No       | `'prepend'` (default) or `'append'` — controls whether the group is placed before or after existing region content. |
+| `entity_id` | No       | Restrict the placement to a specific entity (e.g. a particular product or category ID).      |
+
+> **Future improvement:**
 > - A new `{{widget-builder}}` Handlebars helper to place widget previews directly in your templates wherever the helper is used.
 
 ### Publishing a Widget Template
