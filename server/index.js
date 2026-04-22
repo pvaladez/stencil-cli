@@ -36,6 +36,9 @@ function buildManifest(srcManifest, options) {
     pluginsByName['./plugins/renderer/renderer.module.js'].storeUrl = storeUrl;
     pluginsByName['./plugins/renderer/renderer.module.js'].storeSettingsLocale =
         options.storeSettingsLocale;
+    pluginsByName['./plugins/renderer/renderer.module.js'].widgetsDir = options.widgetsDir || null;
+    pluginsByName['./plugins/renderer/renderer.module.js'].apiHost = options.apiHost || null;
+    pluginsByName['./plugins/renderer/renderer.module.js'].storeHash = options.storeHash || null;
     pluginsByName['./plugins/theme-assets/theme-assets.module.js'].themePath = options.themePath;
     resManifest.register.plugins = _.reduce(
         pluginsByName,

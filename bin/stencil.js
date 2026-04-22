@@ -17,4 +17,5 @@ program
     .command('debug', 'Prints environment and theme settings for debug purposes')
     .command('scss-autofix', 'Autofix SCSS files in the current directory')
     .command('attributes-analyzer', 'Generates a report of all attributes used in the theme')
+    .command('publish-widget', 'Publish a widget template to your BigCommerce store')
     .parse(process.argv);

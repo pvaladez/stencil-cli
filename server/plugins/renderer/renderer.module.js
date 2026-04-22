@@ -12,6 +12,7 @@ import { int2uuid, stripDomainFromCookies, normalizeRedirectUrl } from '../../li
 import { readFromStream, readStream, tapStream } from '../../../lib/utils/asyncUtils.js';
 import NetworkUtils from '../../../lib/utils/NetworkUtils.js';
 import contentApiClient from '../../../lib/content-api-client.js';
+import localWidgetRenderer from '../../../lib/local-widget-renderer.js';
 import { getPageType } from '../../lib/page-type-util.js';
 import {
     frontmatterRegex,
@@ -233,6 +234,31 @@ internals.parseResponse = async (bcAppData, request, response, responseArgs) => 
             formattedRegions[region.name] = region.html;
         });
     }
+
+    if (internals.options.widgetsDir) {
+        try {
+            console.log(`[Widget Builder] Rendering widgets for pageType=${pageType || '(none)'}, entityId=${entityId}`);
+            const widgetEntries = await localWidgetRenderer.getRenderedWidgetsForPage({
+                widgetsDir: internals.options.widgetsDir,
+                pageType,
+                entityId,
+                accessToken: internals.options.accessToken,
+                apiHost: internals.options.apiHost,
+                storeHash: internals.options.storeHash,
+            });
+
+            if (widgetEntries.length > 0) {
+                console.log(`[Widget Builder] Injecting ${widgetEntries.length} widget(s) into regions: ${widgetEntries.map((e) => e.region).join(', ')}`);
+            } else {
+                console.log(`[Widget Builder] No matching widgets for this page`);
+            }
+
+            localWidgetRenderer.mergeWidgetRegions(formattedRegions, widgetEntries);
+        } catch (err) {
+            console.error(`Widget Builder error: ${err.message}`.red);
+        }
+    }
+
     return internals.getPencilResponse(
         response2.data,
         request,
